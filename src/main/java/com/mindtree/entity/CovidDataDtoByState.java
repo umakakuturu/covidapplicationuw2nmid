@@ -9,16 +9,14 @@ public class CovidDataDtoByState {
     private Date date;
 
     @JsonProperty("FIRST STATE")
-
     private String firsyState;
     @JsonProperty("SECOND STATE")
-
     private String secondState;
 
-    @JsonProperty("firstState_ConfirmedTotal")
+    @JsonProperty("FIRST STATE CONFIRMED TOTAL")
     private String firstStateConfirmedTotal;
 
-    @JsonProperty("secondState_ConfirmedTotal")
+    @JsonProperty("SECOND STATE CONFIRMED TOTAL")
     private String secondStateConfirmedTotal;
 
     public CovidDataDtoByState(Date date, String firsyState, String secondState, String firstStateConfirmedTotal, String secondStateConfirmedTotal) {
@@ -27,6 +25,10 @@ public class CovidDataDtoByState {
         this.secondState = secondState;
         this.firstStateConfirmedTotal = firstStateConfirmedTotal;
         this.secondStateConfirmedTotal = secondStateConfirmedTotal;
+    }
+
+    public CovidDataDtoByState() {
+
     }
 
     public Date getDate() {
@@ -60,7 +62,6 @@ public class CovidDataDtoByState {
     public void setFirstStateConfirmedTotal(String firstStateConfirmedTotal) {
         this.firstStateConfirmedTotal = firstStateConfirmedTotal;
     }
-
     public String getSecondStateConfirmedTotal() {
         return secondStateConfirmedTotal;
     }
@@ -68,4 +69,16 @@ public class CovidDataDtoByState {
     public void setSecondStateConfirmedTotal(String secondStateConfirmedTotal) {
         this.secondStateConfirmedTotal = secondStateConfirmedTotal;
     }
+
+    @Override
+    public String toString() {
+        return "CovidDataDtoByState{" +
+                "date=" + date +
+                ", firsyState='" + firsyState + '\'' +
+                ", secondState='" + secondState + '\'' +
+                ", firstStateConfirmedTotal='" + firstStateConfirmedTotal + '\'' +
+                ", secondStateConfirmedTotal='" + secondStateConfirmedTotal + '\'' +
+                '}';
+    }
+
 }

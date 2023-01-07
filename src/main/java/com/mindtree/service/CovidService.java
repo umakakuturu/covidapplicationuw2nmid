@@ -12,10 +12,10 @@ public interface CovidService {
 
     List<String> getAllStates();
 
-    List<String> findDistrictNameByState(String state);
+    List<String> findDistrictNamesbyState(String state);
 
     List<CovidDataDto> findDataByStateInDateRange( Date startDate, Date endDate);
 
 
-    List<CovidDataDtoByState> findDataByStateAndDateRange(Date startDate, Date endDate, String firstStateCode, String secondStateCode);
+    List<CovidDataDtoByState> getDataFromTwoStatesAndDateRange(Date startdate, Date enddate, String firststate, String secondstate);
 }
