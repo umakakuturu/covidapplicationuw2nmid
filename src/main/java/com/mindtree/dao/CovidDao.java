@@ -21,8 +21,11 @@ public interface CovidDao extends JpaRepository<CovidData, Integer> {
    /* @Query("SELECT new com.example.DTO(date, state, SUM(CASE WHEN state = :state1 THEN confirmed ELSE 0 END) as confirmed1, SUM(CASE WHEN state = :state2 THEN confirmed ELSE 0 END) as confirmed2) FROM Cases c WHERE date BETWEEN :startDate AND :endDate AND (state = :state1 OR state = :state2) GROUP BY date, state")
     List<DTO> findConfirmedCasesByDateAndState(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("state1") String state1, @Param("state2") String state2);
 */
-
-    @Query("SELECT new com.mindtree.entity.CovidDataDtoByState(date, state, SUM(CASE WHEN state = :state1 THEN firstStateConfirmedTotal ELSE 0 END) as firstStateConfirmedTotal, SUM(CASE WHEN state = :state2 THEN secondStateConfirmedTotal ELSE 0 END) as secondStateConfirmedTotal) FROM Cases c WHERE date BETWEEN :startDate AND :endDate AND (state = :state1 OR state = :state2) GROUP BY date, state")
-    List<CovidData> findConfirmedCasesByDateAndState(Date startDate, Date endDate, String state1, String state2);
+   @Query(value = "select f.date as 'Date' , f.state as 'First state' , sum(f.confirmed) as 'first state confirmed total',s.state as 'Second State',s.sec as 'Second state confirmed total' FROM " +
+           "covid_analysis.covid_data f LEFT JOIN(SELECT  date,state , sum(confirmed) as 'sec'" +
+           " FROM covid_analysis.covid_data WHERE (date >:startdate  and date <:enddate) and state =:secondstate " +
+           "group by date order by date) as s ON (f.date = s.date) WHERE (f.date >:startdate  and f.date <:enddate) " +
+           "and f.state =:firststate group by f.date ORDER BY f.date;", nativeQuery = true)
+   public List<Object> findConfirmedDetails(Date startdate, Date enddate, String firststate, String secondstate);
 
 }

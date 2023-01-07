@@ -24,63 +24,77 @@ public class CovidServiceImpl implements CovidService {
     @Override
     public List<String> getAllStates() {
         List<CovidData> data = covidDao.findAll();
-        List<String> states = data.stream().map(i -> i.getState()).distinct().collect(Collectors.toList());
+        List<String> states = data.stream().map(covidData -> covidData.getState()).distinct().collect(Collectors.toList());
         return states;
     }
 
 
     @Override
-    public List<String> findDistrictNameByState(String state) {
+    public List<String> findDistrictNamesbyState(String state) {
         List<CovidData> data = covidDao.findAll();
-        List<String> district = null;
+        List<String> districtNames = null;
         List<CovidData> stateData = covidDao.findByState(state);
         try {
             if (stateData.size() == 0) {
                 throw new InvalidStateCodeException("Invalid State code, please check your input");
             }
-            district = data.stream().filter(covidData -> covidData.getState().equalsIgnoreCase(state))
+            districtNames = data.stream().filter(covidData -> covidData.getState().equalsIgnoreCase(state))
                     .map(covidData -> covidData.getDistrict()).sorted().collect(Collectors.toList());
         } catch (InvalidStateCodeException e) {
             // log the error message
             System.out.println(e.getMessage());
             // set district to an empty list
-            district = new ArrayList<>();
+            districtNames = new ArrayList<>();
         }
-        return district;
+        return districtNames;
     }
 
     @Override
     public List<CovidDataDto> findDataByStateInDateRange(Date startDate, Date endDate) {
-        List<CovidDataDto> result = null;
+        List<CovidDataDto> covidDataDtos = null;
         List<CovidData> covidData = covidDao.findByDateBetween(startDate, endDate);
 
         try {
             if (covidData.size() == 0) {
                 throw new NoDataFoundException("No Data Present");
             }
-            result = covidData.stream()
+            covidDataDtos = covidData.stream()
                     .sorted(Comparator.comparing(CovidData::getDate))
-                    .map(data -> {
-                        CovidDataDto dto = new CovidDataDto();
-                        BeanUtils.copyProperties(data, dto);
-                        return dto;
+                    .map(covidData1 -> {
+                        CovidDataDto covidDataDto = new CovidDataDto();
+                        BeanUtils.copyProperties(covidData1, covidDataDto);
+                        return covidDataDto;
                     })
                     .collect(Collectors.toList());
-
-
         } catch (NoDataFoundException e) {
             System.out.println(e.getMessage());
-            result = new ArrayList<>();
+            covidDataDtos = new ArrayList<>();
         }
-        return result;
+        return covidDataDtos;
     }
 
     @Override
-    public List<CovidDataDtoByState> findDataByStateAndDateRange(Date startDate, Date endDate, String firstStateCode, String secondStateCode) {
+    public List<CovidDataDtoByState> getDataFromTwoStatesAndDateRange(Date startdate, Date enddate, String firststate, String secondstate) {
+        List<CovidData> covidData = covidDao.findByDateBetween(startdate, enddate);
+        List<CovidDataDtoByState> covidDataDtoByStates = new ArrayList<>();
+        String firststateconfirmtotal = null;
+        String secondstateconfirmtotal = null;
+        for (CovidData data : covidData) {
+            if (data.getState().equals(firststate)) {
+                firststateconfirmtotal = data.getConfirmed();
+            }
+            if (data.getState().equals(secondstate)) {
+                secondstateconfirmtotal = data.getConfirmed();
 
-        List<CovidData> response = covidDao.findConfirmedCasesByDateAndState(startDate,endDate,firstStateCode,secondStateCode);
-
-
-        return null;
+            }
+            CovidDataDtoByState covidDataDtoByState = new CovidDataDtoByState();
+            covidDataDtoByState.setDate(data.getDate());
+            covidDataDtoByState.setFirsyState(firststate);
+            covidDataDtoByState.setSecondState(secondstate);
+            covidDataDtoByState.setSecondStateConfirmedTotal(secondstateconfirmtotal);
+            covidDataDtoByState.setFirstStateConfirmedTotal(firststateconfirmtotal);
+            covidDataDtoByStates.add(covidDataDtoByState);
+        }
+        return covidDataDtoByStates;
     }
 }

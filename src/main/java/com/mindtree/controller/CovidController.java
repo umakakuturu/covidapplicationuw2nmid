@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
+
 @RequestMapping("/covid")
 @RestController
 public class CovidController {
@@ -21,8 +22,8 @@ public class CovidController {
     }
 
     @GetMapping("/district/{state}")
-    public List<String> findDistrictNamebyState(@PathVariable("state") String state) {
-        List<String> districts = covidService.findDistrictNameByState(state);
+    public List<String> findDistrictNamesbyState(@PathVariable("state") String state) {
+        List<String> districts = covidService.findDistrictNamesbyState(state);
         return districts;
 
     }
@@ -35,10 +36,10 @@ public class CovidController {
     }
 
     @GetMapping("/DataBetweenDatesByStateWise")
-    public List<CovidDataDtoByState> findDataByStateAndDateRange(@RequestParam("startDate") Date startDate,
-                                                                 @RequestParam("endDate") Date endDate,
-                                                                 @RequestParam("firstStateCode") String firstStateCode, @RequestParam("secondStateCode") String secondStateCode ) {
-        return covidService.findDataByStateAndDateRange(startDate,endDate,firstStateCode, secondStateCode);
+    public  List<CovidDataDtoByState> findDataFromTwoStatesAndDateRange(@RequestParam("startDate") Date startdate,
+                                                    @RequestParam("endDate") Date enddate,
+                                                    @RequestParam("firststate") String firststate, @RequestParam("secondstate") String secondstate) {
+        return covidService.getDataFromTwoStatesAndDateRange(startdate, enddate, firststate, secondstate);
     }
 
 }
